@@ -1,0 +1,30 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from bs4 import BeautifulSoup
+import time
+
+chrome_options = Options()
+chrome_options.add_argument('--headless')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+chrome_options.add_argument('--disable-gpu')
+
+
+driver = webdriver.Chrome(options=chrome_options)
+try:
+    driver.get('https://www.pomorie.ru/news/')
+    time.sleep(2)
+
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    links = soup.select('a.info')
+
+    if not links:
+        print("Теги <a> с классом 'info' не найдены.")
+    else:
+        for i, tag in enumerate(links, 1):
+            text = tag.get_text(strip=True)
+            href = tag.get('href', 'нет ссылки')
+            print(f"{i}. {text} | Ссылка: {href}")
+
+finally:
+    driver.quit()
